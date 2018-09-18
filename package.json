@@ -1,6 +1,6 @@
 {
   "name": "botpress-chatbase",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Chatbase is a cloud service that offers products for designing, analyzing, and optimizing conversational experiences. This botpress module provides necessary integration to use chatbase in your bots",
   "main": "bin/node.bundle.js",
   "botpress": {

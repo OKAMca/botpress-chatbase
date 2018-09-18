@@ -14,3 +14,4 @@ chatbase.json config file:
     "notHandledIntents": "unknown,none" // optional field, comma seperated fallback intents
 }
 ```
+On the incoming middleware chain, this module should be placed after botpress-nlu module

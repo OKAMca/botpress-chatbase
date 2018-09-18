@@ -36,8 +36,13 @@ module.exports = {
 
       const notHandledIntents = config.notHandledIntents.split(",");
       const newMsg = chatbase.newMessage();
+      let intent = "";
 
-      if (notHandledIntents.includes(event.nlu.intent.name)) {
+      if (event.nlu) {
+        intent = event.nlu.intent.name;
+      }
+
+      if (notHandledIntents.includes(intent)) {
         newMsg.setAsNotHandled;
       } else {
         newMsg.setAsHandled;
@@ -47,7 +52,7 @@ module.exports = {
         .setAsTypeUser()
         .setMessage(event.text)
         .setUserId(event.user.id)
-        .setIntent(event.nlu.intent.name)
+        .setIntent(intent)
         .send();
 
       next();

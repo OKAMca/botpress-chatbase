@@ -26,12 +26,20 @@ module.exports = {
   init: async (bp, configurator, helpers) => {
     const config = await configurator.loadAll();
     chatbase.setApiKey(config.apiKey);
-    chatbase.setPlatform(config.platform);
+
+    if( config.platform !== 'auto' ) {
+      chatbase.setPlatform(config.platform);
+    }
 
     async function incomingMiddleware(event, next) {
       if (event.type != "text") {
         next();
         return;
+      }
+      
+      if( config.platform === 'auto' ) {
+        const platform = event.platform || 'unknown';
+        chatbase.setPlatform(platform);
       }
 
       const notHandledIntents = config.notHandledIntents.split(",");

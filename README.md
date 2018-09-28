@@ -15,3 +15,6 @@ chatbase.json config file:
 }
 ```
 On the incoming middleware chain, this module should be placed after botpress-nlu module
+
+### Platform Detection
+Set `platform` to `auto` for automatic platform detection by botpress.

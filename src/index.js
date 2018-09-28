@@ -72,14 +72,19 @@ module.exports = {
         return;
       }
 
+      if( config.platform === 'auto' ) {
+        const platform = event.platform || 'unknown';
+        chatbase.setPlatform(platform);
+      }
+
+      const userId = event.user != null ? event.user.id : event.raw.to;
       const newMsg = chatbase.newMessage();
       newMsg
         .setAsTypeAgent()
         .setMessage(event.text)
-        .setUserId(event.user.id)
+        .setUserId(userId)
         .setAsHandled()
         .send();
-
       next();
     }
 

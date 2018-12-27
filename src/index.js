@@ -27,17 +27,18 @@ module.exports = {
     const config = await configurator.loadAll();
     chatbase.setApiKey(config.apiKey);
 
-    if( config.platform !== 'auto' ) {
+    if (config.platform !== 'auto') {
       chatbase.setPlatform(config.platform);
     }
 
     async function incomingMiddleware(event, next) {
-      if (event.type != "text") {
+
+      if (event.type != "message" || event.type != "text") {
         next();
         return;
       }
-      
-      if( config.platform === 'auto' ) {
+
+      if (config.platform === 'auto') {
         const platform = event.platform || 'unknown';
         chatbase.setPlatform(platform);
       }
@@ -50,29 +51,47 @@ module.exports = {
         intent = event.nlu.intent.name;
       }
 
-      if (notHandledIntents.includes(intent)) {
-        newMsg.setAsNotHandled;
+      // event.chatbaseEvent should be set by the previous middleware in the chain
+      if (event.chatbaseEvent) {
+        var chatbaseEvent = event.chatbaseEvent;
+        if (chatbaseEvent.isHandled) {
+          newMsg.setAsHandled();
+        } else {
+          newMsg.setAsNotHandled();
+        }
       } else {
-        newMsg.setAsHandled;
+        if (notHandledIntents.includes(intent)) {
+          newMsg.setAsNotHandled();
+        } else {
+          newMsg.setAsHandled();
+        }
       }
-
       newMsg
         .setAsTypeUser()
+        .setTimestamp(Date.now().toString())
         .setMessage(event.text)
-        .setUserId(event.user.id)
         .setIntent(intent)
-        .send();
+        .setUserId(event.user.id)
+        .send()
+        .then(msg => event.bp.logger.info(msg.getCreateResponse()))
+        .catch(err => event.bp.logger.error(err));
 
-      next();
+
+      if (event.chatbaseEvent && !event.chatbaseEvent.swallow) {
+        next();
+      }
+
     }
 
+
     async function outgoingMiddleware(event, next) {
-      if (event.type != "text") {
+
+      if (event.type != "message" || event.type != "text") {
         next();
         return;
       }
 
-      if( config.platform === 'auto' ) {
+      if (config.platform === 'auto') {
         const platform = event.platform || 'unknown';
         chatbase.setPlatform(platform);
       }
@@ -81,8 +100,9 @@ module.exports = {
       const newMsg = chatbase.newMessage();
       newMsg
         .setAsTypeAgent()
-        .setMessage(event.text)
+        .setTimestamp(Date.now().toString())
         .setUserId(userId)
+        .setMessage(event.text)
         .setAsHandled()
         .send();
       next();

@@ -32,8 +32,12 @@ module.exports = {
     }
 
     async function incomingMiddleware(event, next) {
-
-      if (event.type != "message" && event.type != "text") {
+      /* 
+        a8message is a custom event type,  
+        You can have your own custom event type checked here or leave it to default of type text.
+        event.raw.payload contains the incoming message payload, Checks if the message is of type 'text'
+      */
+      if (event.type != "a8message" && event.type != "text" && event.raw.payload.msgType != "text") {
         next();
         return;
       }
@@ -86,7 +90,7 @@ module.exports = {
 
     async function outgoingMiddleware(event, next) {
 
-      if (event.type != "message" && event.type != "text") {
+      if (event.type != "a8message" && event.type != "text" && event.raw.payload.msgType != "text") {
         next();
         return;
       }

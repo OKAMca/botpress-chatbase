@@ -37,7 +37,13 @@ module.exports = {
         You can have your own custom event type checked here or leave it to default of type text.
         event.raw.payload contains the incoming message payload, Checks if the message is of type 'text'
       */
-      if (event.type != "a8message" && event.type != "text" && event.raw.payload.msgType != "text") {
+      if (event.type != "a8message" && event.type != "text") {
+        next();
+        return;
+      }
+      
+      //Incase the incoming message is of not type text, say it an image/attachment that is set in your payload,
+      if(event.raw.payload && event.raw.payload.msgType != "text"){
         next();
         return;
       }
@@ -90,7 +96,12 @@ module.exports = {
 
     async function outgoingMiddleware(event, next) {
 
-      if (event.type != "a8message" && event.type != "text" && event.raw.payload.msgType != "text") {
+      if (event.type != "a8message" && event.type != "text") {
+        next();
+        return;
+      }
+      //Incase the Outgoing message is of not type text, say it an image/attachment that is set in your payload,
+      if(event.raw.payload && event.raw.payload.msgType != "text"){
         next();
         return;
       }

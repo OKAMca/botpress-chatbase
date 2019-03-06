@@ -32,7 +32,7 @@ module.exports = {
     }
 
     async function incomingMiddleware(event, next) {
-      if (event.type != "text") {
+      if (event.type != "text" && event.type != 'message' && event.type != 'postback') {
         next();
         return;
       }
@@ -45,12 +45,14 @@ module.exports = {
       const notHandledIntents = config.notHandledIntents.split(",");
       const newMsg = chatbase.newMessage();
       let intent = "";
+      let confidence = 0
 
       if (event.nlu) {
         intent = event.nlu.intent.name;
+        confidence = event.nlu.intent.confidence
       }
 
-      if (notHandledIntents.includes(intent)) {
+      if (notHandledIntents.includes(intent) || confidence < 0.7 ) {
         newMsg.setAsNotHandled;
       } else {
         newMsg.setAsHandled;
@@ -67,7 +69,7 @@ module.exports = {
     }
 
     async function outgoingMiddleware(event, next) {
-      if (event.type != "text") {
+      if (event.type != "text" && event.type != 'message' && event.type != 'postback') {
         next();
         return;
       }
